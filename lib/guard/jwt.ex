@@ -7,7 +7,7 @@ defmodule ExJwtGuard.Guard.JWT do
     secret: "<Vq6gFqi7@dNC~XlAvn$C@SHJ*=|$icmzH/em^^8'RgD0^DgG=>8IcqUwE1p%3E"
   ]
 
-  def sign(user \\ %{}) do
+  def generate_token(user \\ %{}) do
     user = %User{
       id: 102,
       user_name: "joao.silva",
@@ -31,6 +31,18 @@ defmodule ExJwtGuard.Guard.JWT do
     |> case do
       {:ok, jwt} -> jwt
       _error -> nil
+    end
+  end
+
+  def verify_token(jwt) do
+    try do
+      Joken.Signer.verify(jwt, gen_config_jwt())
+      |> case do
+        {:ok, claims} -> claims
+        _ -> %{error: "token.jwt.invalid"} 
+      end
+    rescue
+      error -> error
     end
   end
 
